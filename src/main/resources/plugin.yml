@@ -1,0 +1,7 @@
+name: aurinskspigot
+version: 0.0.1-pre-alpha
+main: com.aurinsk.aurinskspigot.AurinskSpigot
+commands:
+  sendanalyticsmanual:
+    description: Send the analytics of the server manually, overriding the automatic functionality
+    usage: /sendanalyticsmanual
