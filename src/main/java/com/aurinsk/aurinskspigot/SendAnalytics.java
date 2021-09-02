@@ -48,26 +48,28 @@ public class SendAnalytics {
         String tps = String.valueOf(MinecraftServer.TPS);
         String ip = getPublicIP();
         String minecraftVersion = Bukkit.getBukkitVersion();
-        //PluginDescriptionFile pdf = plugin.getDescription();
         String pluginVersion = plugin.getDescription().getVersion();
 
         URL url = null;
         try {
             url = new URL("http://192.168.1.251:3000/api/report");
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+            plugin.getLogger().warning("Error creating connection to API, skipping analytics send");
+            return;
         }
         URLConnection con = null;
         try {
             con = url.openConnection();
         } catch (IOException e) {
-            e.printStackTrace();
+            plugin.getLogger().warning("Error opening connection to API, skipping analytics send");
+            return;
         }
-        HttpURLConnection http = (HttpURLConnection)con;
+        HttpURLConnection http = (HttpURLConnection) con;
         try {
-            http.setRequestMethod("POST"); // PUT is another valid option
+            http.setRequestMethod("POST");
         } catch (ProtocolException e) {
-            e.printStackTrace();
+            plugin.getLogger().warning("Error setting request method to API, skipping analytics send");
+            return;
         }
         http.setDoOutput(true);
 
@@ -86,7 +88,8 @@ public class SendAnalytics {
                 sj.add(URLEncoder.encode(entry.getKey(), "UTF-8") + "="
                         + URLEncoder.encode(entry.getValue(), "UTF-8"));
             } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
+                plugin.getLogger().warning("Error encoding metrics, skipping analytics send");
+                return;
             }
         }
         byte[] out = sj.toString().getBytes(StandardCharsets.UTF_8);
@@ -97,12 +100,13 @@ public class SendAnalytics {
         try {
             http.connect();
         } catch (IOException e) {
-            e.printStackTrace();
+            plugin.getLogger().severe("Error connecting to API, skipping analytics send");
+            return;
         }
-        try(OutputStream os = http.getOutputStream()) {
+        try (OutputStream os = http.getOutputStream()) {
             os.write(out);
         } catch (IOException e) {
-            e.printStackTrace();
+            plugin.getLogger().warning("Error writing output stream, skipping analytics send");
         }
     }
 }

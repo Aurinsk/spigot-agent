@@ -29,18 +29,19 @@ public class AurinskSpigot extends JavaPlugin {
                 Scanner reader = new Scanner(uuidFile);
                 uuid = reader.nextLine();
             } catch (IOException e) {
-                e.printStackTrace();
+                getLogger().severe("Error reading UUID to file, disabling analytics reporting");
+                Bukkit.getPluginManager().disablePlugin(this);
             }
         } else {
 
             pluginDir.mkdir();
             File uuidFile = new File(this.getDataFolder() + "/uuid");
+
+            UUID ranUuid = UUID.randomUUID();
+            uuid = String.valueOf(ranUuid);
             try {
                 uuidFile.createNewFile();
                 FileWriter writer = new FileWriter(this.getDataFolder() + "/uuid");
-
-                UUID ranUuid = UUID.randomUUID();
-                uuid = String.valueOf(ranUuid);
 
                 writer.write(String.valueOf(ranUuid));
                 writer.close();
@@ -50,14 +51,11 @@ public class AurinskSpigot extends JavaPlugin {
                 writer2.close();
 
             } catch (IOException e) {
-                e.printStackTrace();
+                getLogger().severe("Error writing UUID from file, disabling analytics reporting");
+                Bukkit.getPluginManager().disablePlugin(this);
             }
 
-
-
         }
-
-        this.getCommand("sendanalyticsmanual").setExecutor(new SendAnalyticsManual());
 
         new BukkitRunnable() {
             public void run() {
